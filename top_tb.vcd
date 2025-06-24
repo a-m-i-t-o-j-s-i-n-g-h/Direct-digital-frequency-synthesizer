@@ -1,0 +1,129 @@
+$date
+	Sun May 11 15:34:52 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ns
+$end
+$scope module testbench $end
+$var wire 20 ! sin_out [19:0] $end
+$var wire 20 " cos_out [19:0] $end
+$var reg 32 # FCW [31:0] $end
+$var reg 1 $ clk $end
+$var reg 20 % last_cos [19:0] $end
+$var reg 20 & last_sin [19:0] $end
+$var reg 2 ' mode [1:0] $end
+$var reg 1 ( rst $end
+$var integer 32 ) out_file [31:0] $end
+$scope module uut $end
+$var wire 32 * FCW [31:0] $end
+$var wire 1 $ clk $end
+$var wire 2 + mode [1:0] $end
+$var wire 1 ( rst $end
+$var wire 20 , ys [19:0] $end
+$var wire 20 - xs [19:0] $end
+$var wire 20 . sin_out [19:0] $end
+$var wire 9 / phi_rot [8:0] $end
+$var wire 3 0 phi_r [2:0] $end
+$var wire 6 1 phi_lut [5:0] $end
+$var wire 32 2 phase [31:0] $end
+$var wire 64 3 lut_data [63:0] $end
+$var wire 3 4 en [2:0] $end
+$var wire 20 5 cos_out [19:0] $end
+$var wire 4 6 R [3:0] $end
+$var wire 1 7 LM $end
+$var wire 4 8 L [3:0] $end
+$scope module AT_inst $end
+$var wire 19 9 ys_shifted [18:0] $end
+$var wire 20 : ys [19:0] $end
+$var wire 19 ; xs_shifted [18:0] $end
+$var wire 20 < xs [19:0] $end
+$var wire 3 = phi_r [2:0] $end
+$var reg 20 > cos_out [19:0] $end
+$var reg 20 ? sin_out [19:0] $end
+$scope function make_signed $end
+$var reg 1 @ sign $end
+$var reg 19 A val [18:0] $end
+$upscope $end
+$upscope $end
+$scope module CONF_inst $end
+$var wire 1 $ clk $end
+$var wire 2 B mode [1:0] $end
+$var wire 1 ( rst $end
+$var reg 4 C L [3:0] $end
+$var reg 1 7 LM $end
+$var reg 1 D LM_d0 $end
+$var reg 1 E LM_d1 $end
+$var reg 4 F L_d0 [3:0] $end
+$var reg 4 G L_d1 [3:0] $end
+$var reg 4 H R [3:0] $end
+$var reg 4 I R_d0 [3:0] $end
+$var reg 4 J R_d1 [3:0] $end
+$var reg 3 K en [2:0] $end
+$var reg 3 L en_d0 [2:0] $end
+$var reg 3 M en_d1 [2:0] $end
+$var reg 4 N new_L [3:0] $end
+$var reg 1 O new_LM $end
+$var reg 4 P new_R [3:0] $end
+$var reg 3 Q new_en [2:0] $end
+$upscope $end
+$scope module LUT_inst $end
+$var wire 1 7 LM $end
+$var wire 6 R addr_lut1 [5:0] $end
+$var wire 64 S lut_data [63:0] $end
+$var wire 6 T phi_lut [5:0] $end
+$var wire 4 U addr_lut0 [3:0] $end
+$var parameter 32 V l $end
+$var parameter 32 W n $end
+$var reg 64 X data_out [63:0] $end
+$upscope $end
+$scope module PA_inst $end
+$var wire 32 Y FCW [31:0] $end
+$var wire 1 $ clk $end
+$var wire 1 ( rst $end
+$var wire 1 Z carry $end
+$var wire 16 [ FCW_upper [15:0] $end
+$var wire 16 \ FCW_lower [15:0] $end
+$var reg 32 ] phase [31:0] $end
+$var reg 16 ^ phase_lower [15:0] $end
+$var reg 16 _ phase_upper [15:0] $end
+$upscope $end
+$scope module PT_inst $end
+$var wire 32 ` PA_out [31:0] $end
+$var wire 14 a phi_s_transformed [13:0] $end
+$var wire 14 b phi_s_raw [13:0] $end
+$var wire 8 c phi_rot [7:0] $end
+$var wire 3 d phi_r [2:0] $end
+$var wire 6 e phi_lut [5:0] $end
+$var wire 17 f phi [16:0] $end
+$var parameter 32 g l $end
+$var parameter 32 h n $end
+$upscope $end
+$scope module ROT_inst $end
+$var wire 1 $ clk $end
+$var wire 3 i en [2:0] $end
+$var wire 64 j lut_data [63:0] $end
+$var wire 9 k phi_rot [8:0] $end
+$var wire 1 ( rst $end
+$var wire 12 l yp [11:0] $end
+$var wire 20 m yc [19:0] $end
+$var wire 20 n y0_ext [19:0] $end
+$var wire 12 o xp [11:0] $end
+$var wire 20 p xc [19:0] $end
+$var wire 20 q x0_ext [19:0] $end
+$var wire 3 r phi2 [2:0] $end
+$var wire 3 s phi1 [2:0] $end
+$var wire 3 t phi0 [2:0] $end
+$var reg 20 u stage1_x [19:0] $end
+$var reg 20 v stage1_y [19:0] $end
+$var reg 20 w stage2_x [19:0] $end
+$var reg 20 x stage2_y [19:0] $end
+$var reg 20 y stage3_x [19:0] $end
+$var reg 20 z stage3_y [19:0] $end
+$var reg 20 { xs [19:0] $end
+$var reg 20 | ys [19:0] $end
+$upscope $end
+$upscope $end
+$upscope $end

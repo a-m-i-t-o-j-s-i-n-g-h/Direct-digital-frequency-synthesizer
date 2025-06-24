@@ -1,0 +1,47 @@
+import numpy as np
+from math import pi, cos, sin
+
+# Constants
+N = 16
+theta_values = np.linspace(0, pi/4, N)
+scale_20bit = 2**19  # For 20-bit: 1 int + 19 frac
+scale_12bit = 2**11  # For 12-bit: 1 int + 11 frac
+
+# Lists to store results
+float_table = []
+hex_table = []
+
+def float_to_fixed_hex(value, scale, bits):
+    fixed_val = int(round(value * scale))
+    if fixed_val >= 2**bits:
+        fixed_val = 2**bits - 1  # clamp to max value
+    return format(fixed_val, f'0{bits // 4}X')  # hex string with padding
+
+# Compute values and store
+for theta in theta_values:
+    xc = cos(theta)
+    yc = sin(theta)
+    xp = (pi / 4) * xc
+    yp = (pi / 4) * yc
+
+    float_table.append((theta, xc, yc, xp, yp))
+
+    xc_hex = float_to_fixed_hex(xc, scale_20bit, 20)
+    yc_hex = float_to_fixed_hex(yc, scale_20bit, 20)
+    xp_hex = float_to_fixed_hex(xp, scale_12bit, 12)
+    yp_hex = float_to_fixed_hex(yp, scale_12bit, 12)
+
+    hex_table.append((xc_hex, yc_hex, xp_hex, yp_hex))
+
+# Print Float Table
+print(f"{'θ (rad)':>10} | {'xc':>10} | {'yc':>10} | {'xp':>10} | {'yp':>10}")
+print('-' * 60)
+for row in float_table:
+    print(f"{row[0]:10.6f} | {row[1]:10.6f} | {row[2]:10.6f} | {row[3]:10.6f} | {row[4]:10.6f}")
+
+# Print Hex Table
+print("\nFixed-Point Hex Table:")
+print(f"{'xc_hex':>10} | {'yc_hex':>10} | {'xp_hex':>6} | {'yp_hex':>6}")
+print('-' * 42)
+for row in hex_table:
+    print(f"{row[0]:>10} | {row[1]:>10} | {row[2]:>6} | {row[3]:>6}")

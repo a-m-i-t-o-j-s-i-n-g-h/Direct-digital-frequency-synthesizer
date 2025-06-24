@@ -1,0 +1,215 @@
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.fft import fft, fftfreq
+from scipy.signal import savgol_filter
+
+def estimate_frequency_fft(smoothed_sin, time_values):
+    """
+    Estimate the dominant frequency from sampled sin_values using FFT.
+
+    Parameters:
+    sin_values (list of float): Time-domain sine values
+    time_values (list of float): Corresponding time values (must be uniform)
+
+    Returns:
+    float: Estimated output frequency in Hz
+    """
+    smoothed_sin = np.array(smoothed_sin)
+    time_values = np.array(time_values) * 1e-12  # Convert from ns to seconds
+
+    
+    # Calculate sampling interval and frequency
+    dt = time_values[1] - time_values[0]
+    fs = 1 / dt
+
+    # Perform FFT
+    N = len(smoothed_sin)
+    window = np.hamming(N)
+    windowed_signal = smoothed_sin * window
+    fft_vals = fft(windowed_signal)
+    fft_mag = np.abs(fft_vals[:N // 2])  # Take positive frequencies only
+    freqs = fftfreq(N, dt)[:N // 2]
+
+    # Identify dominant frequency (ignoring DC component)
+    dominant_idx = np.argmax(fft_mag[1:]) + 1  # skip index 0
+    dominant_freq = freqs[dominant_idx]
+
+    # Optional: Plot the FFT spectrum
+    plt.figure(figsize=(10, 4))
+    plt.plot(freqs, fft_mag)
+    plt.title("FFT Spectrum of sin(t)")
+    plt.xlabel("Frequency (Hz)")
+    plt.ylabel("Magnitude")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+            # Extract time and sin_val from results
+
+    return dominant_freq
+
+def binary20_to_decimal(bin_str):
+    if len(bin_str) != 20:
+        raise ValueError(f"Expected 20-bit binary string, got {len(bin_str)} bits: {bin_str}")
+    
+    # Sign bit (MSB)
+    sign = -1 if bin_str[0] == '1' else 1
+    
+    # Integer bit (2nd MSB)
+    integer_part = int(bin_str[1])
+    
+    # Fractional part (last 18 bits)
+    fractional_part = 0.0
+    for i, bit in enumerate(bin_str[2:]):
+        fractional_part += int(bit) * (2 ** -(i + 1))
+
+    return sign * (integer_part + fractional_part)
+
+
+def read_output_file(file_path):
+    results = []
+    with open(file_path, 'r') as file:
+        for line_num, line in enumerate(file, start=1):
+            line = line.strip()
+            if not line or ',' not in line:
+                continue  # Skip empty or malformed lines
+            
+            try:
+                time_str, sin_bin, cos_bin = [s.strip() for s in line.split(',')]
+                sin_val = binary20_to_decimal(sin_bin)
+                cos_val = binary20_to_decimal(cos_bin)
+                results.append((time_str, sin_val, cos_val))
+            except Exception as e:
+                print(f"Error parsing line {line_num}: {line}")
+                print(f"Reason: {e}")
+    return results
+
+
+def print_results_table(results):
+    print(f"{'Time':<15} {'Sin Value':<20} {'Cos Value':<20} {'Magnitude':<20}")
+    print("-" * 80)
+    for time_str, sin_val, cos_val in results:
+        magnitude = math.sqrt(sin_val**2 + cos_val**2)
+        print(f"{time_str:<15} {sin_val:<20.10f} {cos_val:<20.10f} {magnitude:<20.10f}")
+
+def plot_sin_cos_vs_time(results):
+    times = []
+    sin_values = []
+    cos_values = []
+    
+    for time_str, sin_val, cos_val in results:
+        try:
+            time = float(time_str)  # Convert time to float
+            times.append(time)
+            sin_values.append(sin_val)
+            cos_values.append(cos_val)
+        except ValueError:
+            print(f"Skipping invalid time value: {time_str}")
+    
+    smoothed_sin = smooth_signal(sin_values)
+    smoothed_cos = smooth_signal(cos_values)
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(times, sin_values, label='sin(t)', color='blue', marker='o')
+    plt.plot(times, cos_values, label='cos(t)', color='red', marker='x')
+    plt.title('Sin and Cos Values vs Time')
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(times, smoothed_sin, label='Smoothed sin(t)', color='blue')
+    plt.plot(times, smoothed_cos, label='Smoothed cos(t)', color='red')
+    plt.title('Smoothed Sin and Cos Values vs Time')
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+def smooth_signal(signal, window_length=11, polyorder=3):
+    """
+    Apply Savitzky-Golay filter to smooth a signal.
+
+    Parameters:
+    signal (list or np.array): Input signal values.
+    window_length (int): Length of the filter window (must be odd and > polyorder).
+    polyorder (int): Polynomial order for the filter.
+
+    Returns:
+    np.array: Smoothed signal.
+    """
+    if len(signal) < window_length:
+        window_length = len(signal) // 2 * 2 + 1  # Ensure it's odd and fits data
+    return savgol_filter(signal, window_length=window_length, polyorder=polyorder)
+
+def estimate_sfdr(sin_values, time_values):
+    """
+    Estimate the Spurious-Free Dynamic Range (SFDR) from the FFT of the signal.
+
+    Parameters:
+    sin_values (list of float): Time-domain sine values
+    time_values (list of float): Corresponding time values in ns
+
+    Returns:
+    float: SFDR in dB
+    """
+    sin_values = np.array(sin_values)
+    time_values = np.array(time_values) * 1e-12  # Convert from ns to seconds
+
+    # Sampling parameters
+    dt = time_values[1] - time_values[0]
+    fs = 1 / dt
+    N = len(sin_values)
+
+    # Windowing (optional, helps with spectral leakage)
+    window = np.hamming(N)
+    windowed_signal = sin_values * window
+
+    # FFT and frequency axis
+    fft_vals = fft(windowed_signal)
+    fft_mag = np.abs(fft_vals[:N // 2])
+    freqs = fftfreq(N, dt)[:N // 2]
+
+    # Exclude DC (index 0)
+    fft_mag[0] = 0
+
+    # Find fundamental frequency and its magnitude
+    fundamental_idx = np.argmax(fft_mag)
+    fundamental_mag = fft_mag[fundamental_idx]
+
+    # Exclude fundamental to find max spur
+    spur_mag = np.max(np.delete(fft_mag, fundamental_idx))
+
+    # Compute SFDR in dB
+    sfdr_db = 20 * np.log10(fundamental_mag / spur_mag)
+
+    # Optional: print or plot for visualization
+    print(f"Fundamental Frequency: {freqs[fundamental_idx]:.3f} Hz")
+    print(f"SFDR: {sfdr_db:.2f} dB")
+
+    return sfdr_db
+
+if __name__ == "__main__":
+    file_path = 'output.txt'  # Make sure this file exists in the same directory
+    data = read_output_file(file_path)
+    
+    if data:
+        print_results_table(data)
+        plot_sin_cos_vs_time(data)
+
+        # Add this:
+        time_values = [float(t) for t, _, _ in data]
+        sin_values = [s for _, s, _ in data]
+
+        estimated_freq = estimate_frequency_fft(sin_values, time_values)
+        print(f"\nEstimated Output Frequency: {estimated_freq:.3f} Hz")
+        
+        sfdr = estimate_sfdr(sin_values, time_values)
+        print(f"Estimated SFDR: {sfdr:.2f} dB") 
+    else:
+        print("No valid data found in the file.")
