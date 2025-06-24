@@ -20,6 +20,8 @@ This project provides a hardware implementation of a **Direct Digital Frequency 
 
 /README.md – This document
 
+/BTP.pdf - Contains project report for better visual understanding
+
 Each HDL folder contains top-level modules—`ddfs_accumulator`, `phase_to_amplitude`, and LUT modules—along with vendor-specific wrapper files.
 
 **HOW IT WORKS**
