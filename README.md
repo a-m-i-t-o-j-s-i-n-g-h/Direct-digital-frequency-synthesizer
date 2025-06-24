@@ -15,18 +15,21 @@ This project provides a hardware implementation of a **Direct Digital Frequency 
 **PROJECT STRUCTURE**
 
 /verilog/ – Verilog implementation files
+
 /sim/ – Testbenches and stimulus files
+
 /README.md – This document
 
-Each HDL folder contains top-level modules—`dds_accumulator`, `phase_to_amplitude`, and LUT modules—along with vendor-specific wrapper files.
+Each HDL folder contains top-level modules—`ddfs_accumulator`, `phase_to_amplitude`, and LUT modules—along with vendor-specific wrapper files.
 
 **HOW IT WORKS**
 
 1. **Phase Accumulator**  
 A digital phase accumulator updates the phase on each clock cycle:
-phase_next = phase_current + FCW
+ 
+ phase_next = phase_current + FCW
 
-The FCW sets the step size and therefore the output frequency.
+ The FCW sets the step size and therefore the output frequency.
 
 2. **Phase-to-Amplitude Conversion**  
 Uses a LUT to map the high-order bits of the phase to amplitude values, typically representing a sine wave.
@@ -57,17 +60,21 @@ Verify resource usage (LUTs, BRAM, DSP blocks) based on target FPGA.
 Consider adding an output reconstruction filter post-DAC to suppress Nyquist images.
 
 **GETTING STARTED**
-Clone this repository
-Choose your HDL (/vhdl/ or /verilog/)
-Modify parameters as needed (accumulator width, LUT size, clock rate)
-Run the simulation and examine the output waveforms
-Synthesize and implement on your target FPGA
+
+- Clone this repository
+- Choose your HDL (/vhdl/ or /verilog/)
+- Modify parameters as needed (accumulator width, LUT size, clock rate)
+- Run the simulation and examine the output waveforms
+- Synthesize and implement on your target FPGA
 
 **SUMMARY**
+
 This project provides a ready-to-use and parameterizable DDFS core, ideal for FPGA-based DDS applications, from signal generation to communications. It’s modular, test-driven, and optimized for high spectral purity using LUT-based waveform synthesis and phase rotation techniques.
 
 **CONTACT AND SUPPORT**
+
 Developed by **AMITOJ SINGH**
+
 Email: 2022eeb1295@iitrpr.ac.in
 
 Feel free to open issues, request features, or submit pull requests!
